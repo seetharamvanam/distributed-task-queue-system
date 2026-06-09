@@ -6,6 +6,7 @@ import com.seetha.taskqueue.task.dto.TaskResponseDTO;
 import com.seetha.taskqueue.task.entity.Task;
 import com.seetha.taskqueue.task.enums.TaskStatus;
 import com.seetha.taskqueue.task.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -66,5 +67,19 @@ public class TaskService {
                 savedTask.getCompletedAt(),
                 savedTask.getErrorMessage()
         );
+    }
+
+    @Transactional
+    public List<Task> claimPendingTasks(Integer batchSize, String workerId){
+        LocalDateTime now = LocalDateTime.now();
+        List<Task> claimedTasks = taskRepository.findPendingTasksForUpdate(batchSize);
+        claimedTasks.forEach(task -> {
+            task.setTaskStatus(TaskStatus.CLAIMED);
+            task.setLockedBy(workerId);
+            task.setLockedAt(now);
+            task.setUpdatedAt(now);
+        });
+        taskRepository.saveAll(claimedTasks);
+        return claimedTasks;
     }
 }
