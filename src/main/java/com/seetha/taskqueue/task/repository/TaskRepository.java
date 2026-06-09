@@ -24,4 +24,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findPendingTasksForUpdate(@Param("batchSize") int batchSize);
 
     List<Task> findByTaskStatusInAndLockedAtBefore(List<TaskStatus> taskStatuses, LocalDateTime lockedAt);
+
+    Long countByTaskStatus(TaskStatus taskStatus);
+
+    @Query(
+            value = """
+            SELECT AVG(completed_at - started_at) AS avgTime FROM tasks 
+            WHERE (task_status = 'SUCCESS' AND started_at IS NOT NULL AND completed_at IS NOT NULL)""",
+            nativeQuery = true
+    )
+    Double findAverageExecutionTimeMillis();
 }
