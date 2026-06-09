@@ -388,7 +388,7 @@ PostgreSQL
 ## Build Tool
 
 ```text
-Maven
+Gradle
 ```
 
 ---
