@@ -43,6 +43,10 @@ public class Task {
     private Integer maxRetries;
     @Column
     private LocalDateTime nextRetryAt;
+    @Column
+    private String lockedBy;
+    @Column
+    private LocalDateTime lockedAt;
 
     public Task(TaskType taskType, String payload) {
         this.taskType = taskType;

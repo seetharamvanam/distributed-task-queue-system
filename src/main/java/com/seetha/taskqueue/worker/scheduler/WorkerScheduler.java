@@ -17,4 +17,9 @@ public class WorkerScheduler {
     public void processTasks(){
         workerService.processPendingTasks();
     }
+
+    @Scheduled(fixedDelay = 30000)
+    public void recoverStuckTasks(){
+        workerService.recoverStuckTasks();
+    }
 }

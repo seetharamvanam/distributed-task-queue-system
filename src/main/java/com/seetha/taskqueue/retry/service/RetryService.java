@@ -47,12 +47,16 @@ public class RetryService {
             task.setRetryCount(nextRetryCount);
             task.setTaskStatus(TaskStatus.RETRY_SCHEDULED);
             task.setNextRetryAt(nextRetryAt);
+            task.setLockedBy(null);
+            task.setLockedAt(null);
             task.setErrorMessage(errorMessage);
             task.setUpdatedAt(now);
             taskRepository.save(task);
         }else{
             task.setTaskStatus(TaskStatus.FAILED);
             task.setErrorMessage(errorMessage);
+            task.setLockedBy(null);
+            task.setLockedAt(null);
             task.setCompletedAt(LocalDateTime.now());
             task.setUpdatedAt(LocalDateTime.now());
             taskRepository.save(task);

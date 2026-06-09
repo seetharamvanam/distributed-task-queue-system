@@ -5,5 +5,6 @@ public enum TaskStatus {
     RUNNING,
     SUCCESS,
     FAILED,
-    RETRY_SCHEDULED
+    RETRY_SCHEDULED,
+    CLAIMED
 }
