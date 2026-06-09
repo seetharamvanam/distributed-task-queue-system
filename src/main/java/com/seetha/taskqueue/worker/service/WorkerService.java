@@ -1,5 +1,6 @@
 package com.seetha.taskqueue.worker.service;
 
+import com.seetha.taskqueue.retry.service.RetryService;
 import com.seetha.taskqueue.task.entity.Task;
 import com.seetha.taskqueue.task.enums.TaskStatus;
 import com.seetha.taskqueue.task.repository.TaskRepository;
@@ -14,10 +15,12 @@ public class WorkerService {
 
     private final TaskRepository taskRepository;
     private final TaskExecutor taskExecutor;
-
-    public WorkerService(TaskRepository taskRepository, TaskExecutor taskExecutor) {
+    private final RetryService retryService;
+    public WorkerService(TaskRepository taskRepository, TaskExecutor taskExecutor
+    , RetryService retryService) {
         this.taskRepository = taskRepository;
         this.taskExecutor = taskExecutor;
+        this.retryService = retryService;
     }
 
     public void processPendingTasks(){
@@ -34,7 +37,8 @@ public class WorkerService {
                 task.setUpdatedAt(LocalDateTime.now());
                 taskRepository.save(task);
             }else{
-                task.setTaskStatus(TaskStatus.FAILED);
+                String errorMessage = "Task execution failed for task type: "+ task.getTaskType();
+                retryService.handleFailedTask(task,errorMessage);
                 task.setCompletedAt(LocalDateTime.now());
                 task.setUpdatedAt(LocalDateTime.now());
                 taskRepository.save(task);

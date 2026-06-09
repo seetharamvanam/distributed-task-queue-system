@@ -37,6 +37,12 @@ public class Task {
     private LocalDateTime completedAt;
     @Column
     private String errorMessage;
+    @Column
+    private Integer retryCount;
+    @Column
+    private Integer maxRetries;
+    @Column
+    private LocalDateTime nextRetryAt;
 
     public Task(TaskType taskType, String payload) {
         this.taskType = taskType;

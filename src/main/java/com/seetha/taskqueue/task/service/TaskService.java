@@ -1,5 +1,6 @@
 package com.seetha.taskqueue.task.service;
 
+import com.seetha.taskqueue.retry.policy.RetryPolicy;
 import com.seetha.taskqueue.task.dto.CreateTaskRequestDTO;
 import com.seetha.taskqueue.task.dto.TaskResponseDTO;
 import com.seetha.taskqueue.task.entity.Task;
@@ -15,9 +16,11 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final RetryPolicy retryPolicy;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, RetryPolicy retryPolicy) {
         this.taskRepository = taskRepository;
+        this.retryPolicy = new RetryPolicy();
     }
 
     public TaskResponseDTO createNewTask(CreateTaskRequestDTO createTaskRequestDTO) {
@@ -26,6 +29,8 @@ public class TaskService {
                 .taskType(createTaskRequestDTO.taskType())
                 .payload(createTaskRequestDTO.payload())
                 .taskStatus(TaskStatus.PENDING)
+                .retryCount(0)
+                .maxRetries(retryPolicy.getMaxRetries(createTaskRequestDTO.taskType()))
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
